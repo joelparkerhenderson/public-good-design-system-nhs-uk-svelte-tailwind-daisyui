@@ -1,1 +1,3 @@
-// place files you want to import through the `$lib` alias in this folder.
+// Public Good Design System - main entry point
+export * from './components/index.js';
+export type * from './types.js';

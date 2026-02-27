@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { ButtonProps } from '$lib/types.js';
-  
+
   interface Props extends ButtonProps {}
-  
+
   let {
     element = 'button',
     text,
@@ -19,58 +19,33 @@
     ...restProps
   }: Props = $props();
 
-  // Determine element type based on props
-  const elementType = $derived(() => {
-    if (element) return element;
-    if (href) return 'a';
-    return 'button';
-  });
+  const elementType = $derived(element || (href ? 'a' : 'button'));
 
-  // Map NHS UK variants to DaisyUI classes
-  const variantClasses = $derived(() => {
-    switch (variant) {
-      case 'secondary':
-        return 'btn-secondary';
-      case 'warning':
-        return 'btn-warning';
-      case 'reverse':
-        return 'btn-outline btn-primary';
-      case 'login':
-        return 'btn-primary btn-wide';
-      default:
-        return 'btn-primary';
-    }
-  });
+  const variantClasses = $derived(
+    variant === 'secondary' ? 'btn-secondary' :
+    variant === 'warning' ? 'btn-warning' :
+    variant === 'reverse' ? 'btn-outline btn-primary' :
+    variant === 'login' ? 'btn-primary btn-wide' :
+    'btn-primary'
+  );
 
-  // Create attributes object for spreading
-  const elementAttributes = $derived(() => {
-    const attrs: Record<string, any> = {
-      ...attributes,
-      ...restProps
-    };
-    
-    if (preventDoubleClick && elementType() !== 'a') {
-      attrs['data-prevent-double-click'] = 'true';
-    }
-    
-    if (disabled && elementType() !== 'a') {
-      attrs.disabled = true;
-      attrs['aria-disabled'] = 'true';
-    }
-    
-    return attrs;
+  const elementAttributes = $derived({
+    ...attributes,
+    ...restProps,
+    ...(preventDoubleClick && elementType !== 'a' ? { 'data-prevent-double-click': 'true' } : {}),
+    ...(disabled && elementType !== 'a' ? { disabled: true, 'aria-disabled': 'true' } : {})
   });
 </script>
 
-{#if elementType() === 'a'}
-  <a 
+{#if elementType === 'a'}
+  <a
     class="btn {variantClasses} {disabled ? 'btn-disabled' : ''} {classes}"
     href={href || '#'}
     role="button"
     draggable="false"
     tabindex={disabled ? -1 : 0}
-    aria-disabled={disabled}
-    {...elementAttributes()}
+    aria-disabled={disabled ? 'true' : undefined}
+    {...elementAttributes}
   >
     {#if html}
       {@html html}
@@ -78,23 +53,23 @@
       {text}
     {/if}
   </a>
-{:else if elementType() === 'input'}
-  <input 
+{:else if elementType === 'input'}
+  <input
     class="btn {variantClasses} {classes}"
     {value}
     {name}
     {type}
     {disabled}
-    {...elementAttributes()}
+    {...elementAttributes}
   />
 {:else}
-  <button 
+  <button
     class="btn {variantClasses} {classes}"
     {name}
     {type}
     {value}
     {disabled}
-    {...elementAttributes()}
+    {...elementAttributes}
   >
     {#if html}
       {@html html}

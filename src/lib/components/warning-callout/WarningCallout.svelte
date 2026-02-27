@@ -11,29 +11,28 @@
     html = '',
     children,
     classes = '',
+    attributes = {},
     ...restProps
   }: Props = $props();
 
   const HeadingTag = $derived(`h${headingLevel}` as keyof HTMLElementTagNameMap);
-  const headingId = $derived(`warning-callout-heading-${Math.random().toString(36).substr(2, 9)}`);
 
-  function calloutAttributes() {
-    const { class: _, ...attributes } = restProps;
-    return attributes;
-  }
+  const calloutAttributes = $derived({
+    ...attributes,
+    ...restProps
+  });
 </script>
 
-<div 
+<div
   class="public-good-warning-callout bg-yellow-50 border-l-4 border-yellow-400 p-4 my-4 {classes}"
   role="region"
-  aria-labelledby={headingId}
-  {...calloutAttributes()}
+  aria-label={heading}
+  {...calloutAttributes}
 >
-  <svelte:element this={HeadingTag} 
-    id={headingId}
+  <svelte:element this={HeadingTag}
     class="public-good-warning-callout__label text-lg font-semibold mb-2 text-yellow-800"
   >
-    <span role="text">
+    <span>
       <span class="sr-only">Important: </span>
       {#if headingHtml}
         {@html headingHtml}
@@ -42,7 +41,7 @@
       {/if}
     </span>
   </svelte:element>
-  
+
   <div class="public-good-warning-callout__content text-gray-800">
     {#if children}
       {@render children()}

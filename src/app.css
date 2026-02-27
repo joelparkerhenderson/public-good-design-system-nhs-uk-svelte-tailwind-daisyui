@@ -1,21 +1,50 @@
 @import 'tailwindcss';
 
-/* Public Good Design System Custom Styles */
+@plugin "daisyui";
 
-/* Base styles for Public Good branding */
-:root {
-  --public-good-primary: #0284c7;
-  --public-good-secondary: #475569;
+@plugin "daisyui/theme" {
+  name: "public-good";
+  default: true;
+  color-scheme: light;
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(98.42% 0.0034 247.86);
+  --color-base-300: oklch(92.88% 0.0126 255.51);
+  --color-base-content: oklch(21% 0.006 285.885);
+  --color-primary: oklch(68.47% 0.1479 237.32);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(55.44% 0.0407 257.42);
+  --color-secondary-content: oklch(100% 0 0);
+  --color-accent: oklch(76.86% 0.1647 70.08);
+  --color-accent-content: oklch(0% 0 0);
+  --color-neutral: oklch(37.29% 0.0306 259.73);
+  --color-neutral-content: oklch(92% 0.004 286.32);
+  --color-info: oklch(62.31% 0.1880 259.81);
+  --color-info-content: oklch(100% 0 0);
+  --color-success: oklch(69.59% 0.1491 162.48);
+  --color-success-content: oklch(100% 0 0);
+  --color-warning: oklch(76.86% 0.1647 70.08);
+  --color-warning-content: oklch(0% 0 0);
+  --color-error: oklch(63.68% 0.2078 25.33);
+  --color-error-content: oklch(100% 0 0);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
 }
 
-/* Custom component styles will be added as needed */
-
-/* Accessibility improvements */
+/* Accessibility: screen reader only utility */
 .sr-only {
-  @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
-}
-
-/* Focus visible improvements for better keyboard navigation */
-.focus-visible {
-  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }

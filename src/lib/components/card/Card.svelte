@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { CardProps } from '$lib/types.js';
-  
+
   interface Props extends CardProps {}
-  
+
   let {
     heading,
     headingHtml,
@@ -24,41 +24,57 @@
     ...restProps
   }: Props = $props();
 
-  // Determine card variant classes
-  const cardClasses = $derived(() => {
-    let baseClasses = 'card bg-base-100 shadow-xl';
-    
-    if (clickable) baseClasses += ' card-compact hover:shadow-2xl transition-shadow cursor-pointer';
-    if (secondary) baseClasses += ' bg-base-200';
-    if (feature) baseClasses += ' card-bordered border-primary';
-    if (primary) baseClasses += ' bg-primary text-primary-content';
-    if (topTask) baseClasses += ' bg-accent text-accent-content';
-    
-    // Care card types
-    if (type === 'non-urgent') baseClasses += ' bg-blue-50 border-blue-200';
-    if (type === 'urgent') baseClasses += ' bg-red-50 border-red-200';
-    if (type === 'emergency') baseClasses += ' bg-red-600 text-white';
-    
-    return `${baseClasses} ${classes}`;
+  const cardClasses = $derived((() => {
+    let base = 'card bg-base-100 shadow-xl';
+    if (clickable) base += ' card-compact hover:shadow-2xl transition-shadow cursor-pointer';
+    if (secondary) base += ' bg-base-200';
+    if (feature) base += ' card-bordered border-primary';
+    if (primary) base += ' bg-primary text-primary-content';
+    if (topTask) base += ' bg-accent text-accent-content';
+    if (type === 'non-urgent') base += ' bg-blue-50 border-blue-200';
+    if (type === 'urgent') base += ' bg-red-50 border-red-200';
+    if (type === 'emergency') base += ' bg-red-600 text-white';
+    return `${base} ${classes}`;
+  })());
+
+  const cardAttributes = $derived({
+    ...attributes,
+    ...restProps,
+    ...(clickable && href ? { 'data-clickable': 'true', 'data-href': href } : {})
   });
 
-  // Create attributes object for spreading
-  const cardAttributes = $derived(() => ({
-    ...attributes,
-    ...restProps
-  }));
+  const HeadingTag = $derived(`h${headingLevel}` as keyof HTMLElementTagNameMap);
 
-  // Get the appropriate heading tag
-  const HeadingTag = $derived(() => `h${headingLevel}` as keyof HTMLElementTagNameMap);
+  function handleCardClick(event: MouseEvent) {
+    if (clickable && href && (event.target as HTMLElement).tagName !== 'A') {
+      window.location.href = href;
+    }
+  }
+
+  function handleCardKeydown(event: KeyboardEvent) {
+    if (clickable && href && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      window.location.href = href;
+    }
+  }
 </script>
 
-<div class={cardClasses} {...cardAttributes()}>
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+<div
+  class={cardClasses}
+  onclick={clickable && href ? handleCardClick : undefined}
+  onkeydown={clickable && href ? handleCardKeydown : undefined}
+  role={clickable && href ? 'link' : undefined}
+  tabindex={clickable && href ? 0 : undefined}
+  {...cardAttributes}
+>
   {#if imgURL}
     <figure>
-      <img src={imgURL} alt={imgALT || ''} class="w-full h-48 object-cover" />
+      <img src={imgURL} alt={imgALT || ''} class="w-full h-48 object-cover" loading="lazy" />
     </figure>
   {/if}
-  
+
   <div class="card-body">
     <!-- Heading Section -->
     {#if headingHtml || heading}
@@ -73,7 +89,7 @@
           </a>
         {:else}
           {#if type}
-            <span role="text">
+            <span>
               <span class="sr-only">
                 {#if type === 'non-urgent'}Non-urgent advice:
                 {:else if type === 'urgent'}Urgent advice:
@@ -94,7 +110,7 @@
             {/if}
           {/if}
         {/if}
-        
+
         {#if type}
           <svg class="w-5 h-5 ml-2" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
@@ -125,29 +141,3 @@
     {/if}
   </div>
 </div>
-
-<!-- Make entire card clickable if href provided and clickable is true -->
-{#if clickable && href}
-  <script>
-    // Add click handler to make entire card clickable
-    document.addEventListener('DOMContentLoaded', () => {
-      const clickableCards = document.querySelectorAll('.card.card-compact[data-clickable]');
-      clickableCards.forEach(card => {
-        const href = card.dataset.href;
-        if (href) {
-          card.addEventListener('click', (e) => {
-            if (e.target.tagName !== 'A') {
-              window.location.href = href;
-            }
-          });
-          card.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              window.location.href = href;
-            }
-          });
-        }
-      });
-    });
-  </script>
-{/if}

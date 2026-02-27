@@ -1,14 +1,14 @@
 <script lang="ts">
   import type { BaseComponentProps } from '$lib/types.js';
-  
+
   interface TagProps extends BaseComponentProps {
     text?: string;
     html?: string;
     variant?: 'white' | 'grey' | 'green' | 'aqua-green' | 'blue' | 'purple' | 'pink' | 'red' | 'orange' | 'yellow';
   }
-  
+
   interface Props extends TagProps {}
-  
+
   let {
     text = '',
     html,
@@ -19,33 +19,30 @@
     ...restProps
   }: Props = $props();
 
-  // Create attributes object for tag
-  const tagAttributes = $derived(() => ({
+  const tagAttributes = $derived({
     ...attributes,
     ...restProps
-  }));
-
-  // Map variant to DaisyUI badge classes
-  const variantClasses = $derived(() => {
-    const variantMap = {
-      'white': 'badge-ghost',
-      'grey': 'badge-neutral',
-      'green': 'badge-success',
-      'aqua-green': 'badge-info',
-      'blue': 'badge-primary',
-      'purple': 'badge-secondary',
-      'pink': 'bg-pink-100 text-pink-800 border-pink-200',
-      'red': 'badge-error',
-      'orange': 'badge-warning',
-      'yellow': 'bg-yellow-100 text-yellow-800 border-yellow-200'
-    };
-    return variantMap[variant] || variantMap.grey;
   });
+
+  const variantMap: Record<string, string> = {
+    'white': 'badge-ghost',
+    'grey': 'badge-neutral',
+    'green': 'badge-success',
+    'aqua-green': 'badge-info',
+    'blue': 'badge-primary',
+    'purple': 'badge-secondary',
+    'pink': 'bg-pink-100 text-pink-800 border-pink-200',
+    'red': 'badge-error',
+    'orange': 'badge-warning',
+    'yellow': 'bg-yellow-100 text-yellow-800 border-yellow-200'
+  };
+
+  const variantClasses = $derived(variantMap[variant] || variantMap.grey);
 </script>
 
-<strong 
+<span
   class="public-good-tag badge badge-outline {variantClasses} {classes}"
-  {...tagAttributes()}
+  {...tagAttributes}
 >
   {#if children}
     {@render children()}
@@ -54,11 +51,10 @@
   {:else}
     {text}
   {/if}
-</strong>
+</span>
 
 <style>
   .public-good-tag {
-    /* Base tag styling */
     font-weight: 600;
     font-size: 0.875rem;
     line-height: 1.2;
@@ -66,15 +62,13 @@
     white-space: nowrap;
     vertical-align: middle;
   }
-  
-  /* Custom pink variant */
+
   .public-good-tag.bg-pink-100 {
     background-color: #fce7f3;
     color: #9d174d;
     border-color: #fbcfe8;
   }
-  
-  /* Custom yellow variant */
+
   .public-good-tag.bg-yellow-100 {
     background-color: #fef3c7;
     color: #92400e;

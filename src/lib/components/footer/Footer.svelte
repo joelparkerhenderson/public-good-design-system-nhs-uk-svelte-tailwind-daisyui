@@ -9,23 +9,23 @@
     visuallyHiddenText = 'Support links',
     children,
     classes = '',
+    attributes = {},
     ...restProps
   }: Props = $props();
 
-  function footerAttributes() {
-    const { class: _, ...attributes } = restProps;
-    return attributes;
-  }
+  const footerAttributes = $derived({
+    ...attributes,
+    ...restProps
+  });
 </script>
 
-<footer 
+<footer
   class="public-good-footer bg-base-200 border-t border-base-300 py-8 mt-auto {classes}"
-  role="contentinfo"
-  {...footerAttributes()}
+  {...footerAttributes}
 >
   <div class="container mx-auto px-4 max-w-6xl">
     <h2 class="sr-only">{visuallyHiddenText}</h2>
-    
+
     <div class="public-good-footer__content">
       {#if children}
         {@render children()}
@@ -34,7 +34,7 @@
           <ul class="public-good-footer__list flex flex-wrap gap-x-6 gap-y-2 justify-center sm:justify-start">
             {#each links as link}
               <li class="public-good-footer__list-item">
-                <a 
+                <a
                   class="public-good-footer__list-item-link link link-hover text-base-content/70 hover:text-primary text-sm"
                   href={link.href}
                   {...(link.attributes || {})}

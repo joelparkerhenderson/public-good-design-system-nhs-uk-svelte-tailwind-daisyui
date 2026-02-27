@@ -1,13 +1,13 @@
 <script lang="ts">
   import type { BaseComponentProps } from '$lib/types.js';
-  
+
   interface InsetTextProps extends BaseComponentProps {
     text?: string;
     html?: string;
   }
-  
+
   interface Props extends InsetTextProps {}
-  
+
   let {
     text,
     html,
@@ -17,19 +17,18 @@
     ...restProps
   }: Props = $props();
 
-  // Create attributes object for spreading
-  const insetTextAttributes = $derived(() => ({
+  const insetTextAttributes = $derived({
     ...attributes,
     ...restProps
-  }));
+  });
 </script>
 
-<div 
+<div
   class="public-good-inset-text bg-base-200 border-l-4 border-primary p-4 my-4 {classes}"
-  {...insetTextAttributes()}
+  {...insetTextAttributes}
 >
   <span class="sr-only">Information: </span>
-  
+
   {#if children}
     {@render children()}
   {:else if html}

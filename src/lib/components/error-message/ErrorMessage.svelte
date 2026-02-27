@@ -1,15 +1,15 @@
 <script lang="ts">
   import type { BaseComponentProps } from '$lib/types.js';
-  
+
   interface ErrorMessageProps extends BaseComponentProps {
     id?: string;
     text?: string;
     html?: string;
     visuallyHiddenText?: string;
   }
-  
+
   interface Props extends ErrorMessageProps {}
-  
+
   let {
     id,
     text,
@@ -20,17 +20,16 @@
     ...restProps
   }: Props = $props();
 
-  // Create attributes object for spreading
-  const spanAttributes = $derived(() => ({
+  const spanAttributes = $derived({
     ...attributes,
     ...restProps
-  }));
+  });
 </script>
 
-<span 
+<span
   class="public-good-error-message text-error font-medium text-sm {classes}"
   {id}
-  {...spanAttributes()}
+  {...spanAttributes}
 >
   {#if visuallyHiddenText}
     <span class="sr-only">{visuallyHiddenText}:</span>{' '}

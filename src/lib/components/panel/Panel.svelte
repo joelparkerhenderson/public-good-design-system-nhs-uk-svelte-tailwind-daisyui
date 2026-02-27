@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { BaseComponentProps } from '$lib/types.js';
-  
+
   interface PanelProps extends BaseComponentProps {
     titleText?: string;
     titleHtml?: string;
@@ -8,9 +8,9 @@
     html?: string;
     headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
   }
-  
+
   interface Props extends PanelProps {}
-  
+
   let {
     titleText,
     titleHtml,
@@ -23,67 +23,26 @@
     ...restProps
   }: Props = $props();
 
-  // Create attributes object for spreading
-  const panelAttributes = $derived(() => ({
+  const panelAttributes = $derived({
     ...attributes,
     ...restProps
-  }));
+  });
+
+  const HeadingTag = $derived(`h${headingLevel}` as keyof HTMLElementTagNameMap);
 </script>
 
-<div 
+<div
   class="public-good-panel bg-primary text-primary-content p-6 rounded-lg shadow-lg {classes}"
-  {...panelAttributes()}
+  {...panelAttributes}
 >
   {#if titleText || titleHtml}
-    {#if headingLevel === 1}
-      <h1 class="public-good-panel__title text-3xl font-bold mb-4">
-        {#if titleHtml}
-          {@html titleHtml}
-        {:else}
-          {titleText}
-        {/if}
-      </h1>
-    {:else if headingLevel === 2}
-      <h2 class="public-good-panel__title text-2xl font-bold mb-4">
-        {#if titleHtml}
-          {@html titleHtml}
-        {:else}
-          {titleText}
-        {/if}
-      </h2>
-    {:else if headingLevel === 3}
-      <h3 class="public-good-panel__title text-xl font-bold mb-4">
-        {#if titleHtml}
-          {@html titleHtml}
-        {:else}
-          {titleText}
-        {/if}
-      </h3>
-    {:else if headingLevel === 4}
-      <h4 class="public-good-panel__title text-lg font-bold mb-4">
-        {#if titleHtml}
-          {@html titleHtml}
-        {:else}
-          {titleText}
-        {/if}
-      </h4>
-    {:else if headingLevel === 5}
-      <h5 class="public-good-panel__title text-base font-bold mb-4">
-        {#if titleHtml}
-          {@html titleHtml}
-        {:else}
-          {titleText}
-        {/if}
-      </h5>
-    {:else}
-      <h6 class="public-good-panel__title text-sm font-bold mb-4">
-        {#if titleHtml}
-          {@html titleHtml}
-        {:else}
-          {titleText}
-        {/if}
-      </h6>
-    {/if}
+    <svelte:element this={HeadingTag} class="public-good-panel__title text-3xl font-bold mb-4">
+      {#if titleHtml}
+        {@html titleHtml}
+      {:else}
+        {titleText}
+      {/if}
+    </svelte:element>
   {/if}
 
   {#if children || html || text}

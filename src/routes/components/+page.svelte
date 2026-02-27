@@ -534,16 +534,16 @@
           >
             <div class="space-y-3">
               <div class="form-control">
-                <label class="label">
+                <label class="label" for="fieldset-first-name">
                   <span class="label-text">First name</span>
                 </label>
-                <input type="text" class="input input-bordered input-sm" />
+                <input id="fieldset-first-name" type="text" class="input input-bordered input-sm" />
               </div>
               <div class="form-control">
-                <label class="label">
+                <label class="label" for="fieldset-last-name">
                   <span class="label-text">Last name</span>
                 </label>
-                <input type="text" class="input input-bordered input-sm" />
+                <input id="fieldset-last-name" type="text" class="input input-bordered input-sm" />
               </div>
             </div>
           </Fieldset>
@@ -573,19 +573,19 @@
           
           <div class="space-y-3">
             <div class="form-control">
-              <label class="label">
+              <label class="label" for="hint-email">
                 <span class="label-text">Email address</span>
               </label>
               <Hint text="We'll use this to send you appointment confirmations" />
-              <input type="email" class="input input-bordered input-sm" />
+              <input id="hint-email" type="email" class="input input-bordered input-sm" />
             </div>
-            
+
             <div class="form-control">
-              <label class="label">
+              <label class="label" for="hint-phone">
                 <span class="label-text">Phone number</span>
               </label>
               <Hint html="For example <strong>07700 900 123</strong>" />
-              <input type="tel" class="input input-bordered input-sm" />
+              <input id="hint-phone" type="tel" class="input input-bordered input-sm" />
             </div>
           </div>
         </div>

@@ -1,28 +1,28 @@
 <script lang="ts">
   import type { BaseComponentProps } from '$lib/types.js';
-  
+
   interface TabPanel {
     text?: string;
     html?: string;
     attributes?: Record<string, string>;
   }
-  
+
   interface TabItem {
     label: string;
     id?: string;
     panel: TabPanel;
     attributes?: Record<string, string>;
   }
-  
+
   interface TabsProps extends BaseComponentProps {
     items: TabItem[];
     title?: string;
     idPrefix?: string;
     id?: string;
   }
-  
+
   interface Props extends TabsProps {}
-  
+
   let {
     items = [],
     title = 'Contents',
@@ -34,27 +34,22 @@
     ...restProps
   }: Props = $props();
 
-  // State for active tab
   let activeTabIndex = $state(0);
 
-  // Create attributes object for tabs container
-  const tabsAttributes = $derived(() => ({
+  const tabsAttributes = $derived({
     ...attributes,
     ...restProps
-  }));
+  });
 
-  // Generate tab ID
   function generateTabId(item: TabItem, index: number): string {
     return item.id || `${idPrefix}-${index + 1}`;
   }
 
-  // Handle tab click
   function handleTabClick(index: number, event: Event) {
     event.preventDefault();
     activeTabIndex = index;
   }
 
-  // Handle keyboard navigation
   function handleKeydown(event: KeyboardEvent, index: number) {
     switch (event.key) {
       case 'ArrowLeft':
@@ -77,18 +72,16 @@
   }
 </script>
 
-<div 
+<div
   {id}
   class="public-good-tabs tabs tabs-boxed bg-base-100 {classes}"
-  {...tabsAttributes()}
+  {...tabsAttributes}
 >
-  <!-- Mobile title (hidden on desktop) -->
   <h2 class="public-good-tabs__title text-lg font-semibold mb-4 md:hidden">
     {title}
   </h2>
-  
+
   {#if items.length > 0}
-    <!-- Tab navigation -->
     <div class="tabs-list" role="tablist">
       {#each items as item, index}
         {@const tabId = generateTabId(item, index)}
@@ -99,16 +92,15 @@
           aria-controls="{tabId}-panel"
           id="{tabId}-tab"
           tabindex={activeTabIndex === index ? 0 : -1}
-          onclick={(e) => handleTabClick(index, e)}
-          onkeydown={(e) => handleKeydown(e, index)}
+          onclick={(e: Event) => handleTabClick(index, e)}
+          onkeydown={(e: KeyboardEvent) => handleKeydown(e, index)}
           {...(item.attributes || {})}
         >
           {item.label}
         </button>
       {/each}
     </div>
-    
-    <!-- Tab panels -->
+
     <div class="tab-panels mt-4">
       {#each items as item, index}
         {@const tabId = generateTabId(item, index)}
@@ -129,23 +121,14 @@
       {/each}
     </div>
   {/if}
-  
+
   {#if children}
     {@render children()}
   {/if}
 </div>
 
 <style>
-  .public-good-tabs {
-    /* Custom tabs styling */
-  }
-  
-  .public-good-tabs__title {
-    /* Mobile title styling */
-  }
-  
   .tab-panel {
-    /* Tab panel styling */
     min-height: 200px;
     padding: 1rem;
     background: white;
@@ -153,19 +136,18 @@
     border-top: none;
     border-radius: 0 0 0.5rem 0.5rem;
   }
-  
+
   .tab-panel:focus {
     outline: 2px solid #2563eb;
     outline-offset: 2px;
   }
-  
-  /* Responsive adjustments */
+
   @media (max-width: 768px) {
     .tabs-list {
       flex-direction: column;
       align-items: stretch;
     }
-    
+
     .tab {
       justify-content: flex-start;
       text-align: left;

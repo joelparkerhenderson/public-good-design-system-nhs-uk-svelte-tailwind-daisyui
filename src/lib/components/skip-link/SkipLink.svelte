@@ -1,14 +1,14 @@
 <script lang="ts">
   import type { BaseComponentProps } from '$lib/types.js';
-  
+
   interface SkipLinkProps extends BaseComponentProps {
     href?: string;
     text?: string;
     html?: string;
   }
-  
+
   interface Props extends SkipLinkProps {}
-  
+
   let {
     href = '#maincontent',
     text = 'Skip to main content',
@@ -19,17 +19,16 @@
     ...restProps
   }: Props = $props();
 
-  // Create attributes object for skip link
-  const skipLinkAttributes = $derived(() => ({
+  const skipLinkAttributes = $derived({
     ...attributes,
     ...restProps
-  }));
+  });
 </script>
 
-<a 
-  class="public-good-skip-link btn btn-primary btn-sm fixed top-2 left-2 z-50 opacity-0 focus:opacity-100 transform -translate-y-full focus:translate-y-0 transition-all duration-200 {classes}"
+<a
+  class="public-good-skip-link btn btn-primary btn-sm {classes}"
   {href}
-  {...skipLinkAttributes()}
+  {...skipLinkAttributes}
 >
   {#if children}
     {@render children()}
@@ -42,15 +41,18 @@
 
 <style>
   .public-good-skip-link {
-    /* Ensure skip link appears on focus for keyboard users */
     position: fixed;
     top: 8px;
     left: 8px;
     z-index: 9999;
+    opacity: 0;
+    transform: translateY(-100%);
+    transition: opacity 0.2s, transform 0.2s;
   }
-  
+
   .public-good-skip-link:focus {
-    /* Override any potential focus outline conflicts */
+    opacity: 1;
+    transform: translateY(0);
     outline: 2px solid currentColor;
     outline-offset: 2px;
   }

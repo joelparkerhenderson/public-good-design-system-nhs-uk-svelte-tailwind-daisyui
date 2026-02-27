@@ -18,56 +18,41 @@
     textAlign = 'center',
     children,
     classes = '',
+    attributes = {},
     ...restProps
   }: Props = $props();
 
   const HeadingTag = $derived(`h${headingLevel}` as keyof HTMLElementTagNameMap);
-  
-  function heroAttributes() {
-    const { class: _, ...attributes } = restProps;
-    return attributes;
-  }
 
-  const heroVariantClass = $derived(() => {
-    switch (variant) {
-      case 'emergency':
-        return 'bg-error text-error-content';
-      case 'urgent':
-        return 'bg-warning text-warning-content';
-      case 'success':
-        return 'bg-success text-success-content';
-      case 'info':
-        return 'bg-info text-info-content';
-      default:
-        return 'bg-primary text-primary-content';
-    }
+  const heroAttributes = $derived({
+    ...attributes,
+    ...restProps
   });
 
-  const textAlignClass = $derived(() => {
-    switch (textAlign) {
-      case 'left':
-        return 'text-left';
-      case 'right':
-        return 'text-right';
-      default:
-        return 'text-center';
-    }
-  });
+  const heroVariantClass = $derived(
+    variant === 'emergency' ? 'bg-error text-error-content' :
+    variant === 'urgent' ? 'bg-warning text-warning-content' :
+    variant === 'success' ? 'bg-success text-success-content' :
+    variant === 'info' ? 'bg-info text-info-content' :
+    'bg-primary text-primary-content'
+  );
 
-  const overlayClass = $derived(() => {
-    return `bg-opacity-${Math.round(overlayOpacity / 5) * 5}`;
-  });
+  const textAlignClass = $derived(
+    textAlign === 'left' ? 'text-left' :
+    textAlign === 'right' ? 'text-right' :
+    'text-center'
+  );
 </script>
 
-<section 
+<section
   class="public-good-hero hero {minHeight} {heroVariantClass} {classes}"
   style={backgroundImage ? `background-image: url('${backgroundImage}')` : ''}
-  {...heroAttributes()}
+  {...heroAttributes}
 >
   {#if backgroundImage && overlay}
-    <div class="hero-overlay bg-neutral {overlayClass}"></div>
+    <div class="hero-overlay bg-neutral" style="opacity: {overlayOpacity / 100}"></div>
   {/if}
-  
+
   <div class="hero-content {textAlignClass}">
     <div class="public-good-hero__content max-w-4xl">
       {#if children}

@@ -1,13 +1,13 @@
 <script lang="ts">
   import type { BaseComponentProps } from '$lib/types.js';
-  
+
   interface ErrorItem {
     text?: string;
     html?: string;
     href?: string;
     attributes?: Record<string, string>;
   }
-  
+
   interface ErrorSummaryProps extends BaseComponentProps {
     titleText?: string;
     titleHtml?: string;
@@ -15,9 +15,9 @@
     descriptionHtml?: string;
     errorList: ErrorItem[];
   }
-  
+
   interface Props extends ErrorSummaryProps {}
-  
+
   let {
     titleText = 'There is a problem',
     titleHtml,
@@ -30,15 +30,13 @@
     ...restProps
   }: Props = $props();
 
-  // Create attributes object for spreading
-  const summaryAttributes = $derived(() => ({
+  const summaryAttributes = $derived({
     ...attributes,
     ...restProps
-  }));
+  });
 
-  // Auto-focus the error summary when it appears
   let errorSummaryElement: HTMLElement;
-  
+
   $effect(() => {
     if (errorSummaryElement && errorList.length > 0) {
       errorSummaryElement.focus();
@@ -46,19 +44,18 @@
   });
 </script>
 
-<div 
+<div
   class="public-good-error-summary alert alert-error {classes}"
   aria-labelledby="error-summary-title"
   role="alert"
   tabindex="-1"
   bind:this={errorSummaryElement}
-  {...summaryAttributes()}
+  {...summaryAttributes}
 >
   <div class="flex">
-    <!-- Error Icon -->
-    <svg 
-      class="w-6 h-6 flex-shrink-0 mr-3 mt-0.5" 
-      fill="currentColor" 
+    <svg
+      class="w-6 h-6 flex-shrink-0 mr-3 mt-0.5"
+      fill="currentColor"
       viewBox="0 0 20 20"
       aria-hidden="true"
     >
@@ -66,7 +63,6 @@
     </svg>
 
     <div class="flex-1">
-      <!-- Title -->
       <h2 class="public-good-error-summary__title font-bold text-lg mb-3" id="error-summary-title">
         {#if titleHtml}
           {@html titleHtml}
@@ -76,7 +72,6 @@
       </h2>
 
       <div class="public-good-error-summary__body space-y-3">
-        <!-- Description -->
         {#if children}
           <p>{@render children()}</p>
         {:else if descriptionHtml}
@@ -85,14 +80,13 @@
           <p>{descriptionText}</p>
         {/if}
 
-        <!-- Error List -->
         {#if errorList.length > 0}
           <ul class="public-good-error-summary__list list-disc list-inside space-y-1" role="list">
             {#each errorList as item}
               <li>
                 {#if item.href}
-                  <a 
-                    class="link link-hover underline font-medium" 
+                  <a
+                    class="link link-hover underline font-medium"
                     href={item.href}
                     {...(item.attributes || {})}
                   >

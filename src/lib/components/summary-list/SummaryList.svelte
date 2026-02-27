@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { BaseComponentProps } from '$lib/types.js';
-  
+
   interface SummaryListAction {
     href: string;
     text?: string;
@@ -8,37 +8,37 @@
     visuallyHiddenText?: string;
     attributes?: Record<string, string>;
   }
-  
+
   interface SummaryListActions {
     items: SummaryListAction[];
     classes?: string;
   }
-  
+
   interface SummaryListKey {
     text?: string;
     html?: string;
     classes?: string;
   }
-  
+
   interface SummaryListValue {
     text?: string;
     html?: string;
     classes?: string;
   }
-  
+
   interface SummaryListRow {
     key: SummaryListKey;
     value: SummaryListValue;
     actions?: SummaryListActions;
     classes?: string;
   }
-  
+
   interface SummaryListProps extends BaseComponentProps {
     rows: SummaryListRow[];
   }
-  
+
   interface Props extends SummaryListProps {}
-  
+
   let {
     rows = [],
     classes = '',
@@ -47,27 +47,23 @@
     ...restProps
   }: Props = $props();
 
-  // Check if any row has actions to determine layout
-  const anyRowHasActions = $derived(() => {
-    return rows.some(row => row.actions?.items && row.actions.items.length > 0);
-  });
+  const anyRowHasActions = $derived(
+    rows.some(row => row.actions?.items && row.actions.items.length > 0)
+  );
 
-  // Create attributes object for summary list
-  const summaryListAttributes = $derived(() => ({
+  const summaryListAttributes = $derived({
     ...attributes,
     ...restProps
-  }));
+  });
 </script>
 
-<dl 
+<dl
   class="public-good-summary-list grid gap-4 {classes}"
-  {...summaryListAttributes()}
+  {...summaryListAttributes}
 >
   {#each rows as row}
     {#if row}
-      <div class="public-good-summary-list__row grid {anyRowHasActions() ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'} gap-2 md:gap-4 py-3 border-b border-base-300 last:border-b-0 {!row.actions?.items || row.actions.items.length === 0 ? 'md:grid-cols-2' : ''} {row.classes || ''}">
-        
-        <!-- Key -->
+      <div class="public-good-summary-list__row grid {anyRowHasActions ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'} gap-2 md:gap-4 py-3 border-b border-base-300 last:border-b-0 {row.classes || ''}">
         <dt class="public-good-summary-list__key font-semibold text-base-content {row.key.classes || ''}">
           {#if row.key.html}
             {@html row.key.html}
@@ -75,8 +71,7 @@
             {row.key.text}
           {/if}
         </dt>
-        
-        <!-- Value -->
+
         <dd class="public-good-summary-list__value text-base-content {row.value.classes || ''}">
           {#if row.value.html}
             {@html row.value.html}
@@ -84,14 +79,13 @@
             {row.value.text}
           {/if}
         </dd>
-        
-        <!-- Actions -->
+
         {#if row.actions?.items && row.actions.items.length > 0}
           <dd class="public-good-summary-list__actions {row.actions.classes || ''}">
             {#if row.actions.items.length === 1}
               {@const action = row.actions.items[0]}
-              <a 
-                href={action.href} 
+              <a
+                href={action.href}
                 class="link link-primary text-sm"
                 {...(action.attributes || {})}
               >
@@ -108,8 +102,8 @@
               <ul class="public-good-summary-list__actions-list space-y-1">
                 {#each row.actions.items as action}
                   <li class="public-good-summary-list__actions-list-item">
-                    <a 
-                      href={action.href} 
+                    <a
+                      href={action.href}
                       class="link link-primary text-sm"
                       {...(action.attributes || {})}
                     >
@@ -131,33 +125,8 @@
       </div>
     {/if}
   {/each}
-  
+
   {#if children}
     {@render children()}
   {/if}
 </dl>
-
-<style>
-  .public-good-summary-list {
-    /* Custom styling for summary lists */
-  }
-  
-  .public-good-summary-list__row {
-    /* Ensure proper alignment and spacing */
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .public-good-summary-list__row {
-      grid-template-columns: 1fr;
-    }
-    
-    .public-good-summary-list__key {
-      margin-bottom: 0.25rem;
-    }
-    
-    .public-good-summary-list__actions {
-      margin-top: 0.5rem;
-    }
-  }
-</style>

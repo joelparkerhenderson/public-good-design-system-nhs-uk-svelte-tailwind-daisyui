@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { BaseComponentProps } from '$lib/types.js';
-  
+
   interface NotificationBannerProps extends BaseComponentProps {
     type?: 'success' | 'warning' | 'info' | 'error';
     titleText?: string;
@@ -12,9 +12,9 @@
     role?: 'alert' | 'region' | 'status';
     disableAutoFocus?: boolean;
   }
-  
+
   interface Props extends NotificationBannerProps {}
-  
+
   let {
     type,
     titleText,
@@ -31,68 +31,48 @@
     ...restProps
   }: Props = $props();
 
-  // Determine success banner
   const successBanner = $derived(type === 'success');
-  
-  // Determine role
-  const bannerRole = $derived(() => {
-    if (role) return role;
-    if (successBanner) return 'alert';
-    return 'region';
-  });
-  
-  // Determine title
-  const title = $derived(() => {
-    if (titleHtml) return titleHtml;
-    if (titleText) return titleText;
-    if (successBanner) return 'Success';
-    return 'Important';
-  });
-  
-  // Determine type classes
-  const typeClasses = $derived(() => {
-    const baseClasses = 'public-good-notification-banner alert';
-    switch (type) {
-      case 'success':
-        return `${baseClasses} alert-success`;
-      case 'warning':
-        return `${baseClasses} alert-warning`;
-      case 'error':
-        return `${baseClasses} alert-error`;
-      case 'info':
-        return `${baseClasses} alert-info`;
-      default:
-        return `${baseClasses} alert-info`;
-    }
-  });
 
-  // Create attributes object for spreading
-  const bannerAttributes = $derived(() => ({
+  const bannerRole = $derived(role || (successBanner ? 'alert' : 'region'));
+
+  const title = $derived(titleHtml || titleText || (successBanner ? 'Success' : 'Important'));
+
+  const typeClasses = $derived((() => {
+    const base = 'public-good-notification-banner alert';
+    switch (type) {
+      case 'success': return `${base} alert-success`;
+      case 'warning': return `${base} alert-warning`;
+      case 'error': return `${base} alert-error`;
+      default: return `${base} alert-info`;
+    }
+  })());
+
+  const bannerAttributes = $derived({
     ...attributes,
     ...restProps,
-    role: bannerRole(),
+    role: bannerRole,
     'aria-labelledby': titleId,
     'data-disable-auto-focus': disableAutoFocus
-  }));
+  });
 
-  // Auto-focus functionality
   let bannerElement: HTMLElement;
-  
+
   $effect(() => {
-    if (bannerElement && !disableAutoFocus && (type === 'success' || bannerRole() === 'alert')) {
+    if (bannerElement && !disableAutoFocus && (type === 'success' || bannerRole === 'alert')) {
       bannerElement.focus();
     }
   });
+
+  const HeadingTag = $derived(`h${titleHeadingLevel}` as keyof HTMLElementTagNameMap);
 </script>
 
-<div 
-  class="{typeClasses()} {classes}"
+<div
+  class="{typeClasses} {classes}"
   bind:this={bannerElement}
   tabindex="-1"
-  {...bannerAttributes()}
+  {...bannerAttributes}
 >
   <div class="flex">
-    <!-- Icon based on type -->
     {#if type === 'success'}
       <svg class="w-6 h-6 flex-shrink-0 mr-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
@@ -112,60 +92,16 @@
     {/if}
 
     <div class="flex-1">
-      <!-- Title -->
       <div class="public-good-notification-banner__header">
-        {#if titleHeadingLevel === 1}
-          <h1 class="public-good-notification-banner__title font-bold text-lg mb-2" id={titleId}>
-            {#if titleHtml}
-              {@html title()}
-            {:else}
-              {title()}
-            {/if}
-          </h1>
-        {:else if titleHeadingLevel === 2}
-          <h2 class="public-good-notification-banner__title font-bold text-lg mb-2" id={titleId}>
-            {#if titleHtml}
-              {@html title()}
-            {:else}
-              {title()}
-            {/if}
-          </h2>
-        {:else if titleHeadingLevel === 3}
-          <h3 class="public-good-notification-banner__title font-bold text-lg mb-2" id={titleId}>
-            {#if titleHtml}
-              {@html title()}
-            {:else}
-              {title()}
-            {/if}
-          </h3>
-        {:else if titleHeadingLevel === 4}
-          <h4 class="public-good-notification-banner__title font-bold text-lg mb-2" id={titleId}>
-            {#if titleHtml}
-              {@html title()}
-            {:else}
-              {title()}
-            {/if}
-          </h4>
-        {:else if titleHeadingLevel === 5}
-          <h5 class="public-good-notification-banner__title font-bold text-lg mb-2" id={titleId}>
-            {#if titleHtml}
-              {@html title()}
-            {:else}
-              {title()}
-            {/if}
-          </h5>
-        {:else}
-          <h6 class="public-good-notification-banner__title font-bold text-lg mb-2" id={titleId}>
-            {#if titleHtml}
-              {@html title()}
-            {:else}
-              {title()}
-            {/if}
-          </h6>
-        {/if}
+        <svelte:element this={HeadingTag} class="public-good-notification-banner__title font-bold text-lg mb-2" id={titleId}>
+          {#if titleHtml}
+            {@html title}
+          {:else}
+            {title}
+          {/if}
+        </svelte:element>
       </div>
 
-      <!-- Content -->
       <div class="public-good-notification-banner__content">
         {#if children}
           {@render children()}

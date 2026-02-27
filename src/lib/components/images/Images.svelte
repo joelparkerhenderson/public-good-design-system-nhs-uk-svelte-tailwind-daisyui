@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { BaseComponentProps } from '$lib/types.js';
-  
+
   interface ImagesProps extends BaseComponentProps {
     src: string;
     alt: string;
@@ -8,9 +8,9 @@
     sizes?: string;
     srcset?: string;
   }
-  
+
   interface Props extends ImagesProps {}
-  
+
   let {
     src,
     alt,
@@ -23,31 +23,31 @@
     ...restProps
   }: Props = $props();
 
-  // Create attributes object for spreading
-  const figureAttributes = $derived(() => ({
+  const figureAttributes = $derived({
     ...attributes,
     ...restProps
-  }));
+  });
 </script>
 
-<figure 
+<figure
   class="public-good-image {classes}"
-  {...figureAttributes()}
+  {...figureAttributes}
 >
-  <img 
+  <img
     class="public-good-image__img w-full h-auto rounded-lg shadow-sm"
     {src}
     {alt}
     {sizes}
     {srcset}
+    loading="lazy"
   />
-  
+
   {#if caption}
     <figcaption class="public-good-image__caption text-sm text-base-content/70 mt-2 italic">
       {caption}
     </figcaption>
   {/if}
-  
+
   {#if children}
     {@render children()}
   {/if}

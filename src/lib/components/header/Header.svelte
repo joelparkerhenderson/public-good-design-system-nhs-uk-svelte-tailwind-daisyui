@@ -17,6 +17,7 @@
     transactional = false,
     children,
     classes = '',
+    attributes = {},
     ...restProps
   }: Props = $props();
 
@@ -26,35 +27,33 @@
     mobileMenuOpen = !mobileMenuOpen;
   }
 
-  function headerAttributes() {
-    const { class: _, ...attributes } = restProps;
-    return attributes;
-  }
-
-  const headerVariantClass = $derived(() => {
-    if (transactional) return 'public-good-header--transactional';
-    if (organisational) return 'public-good-header--organisational';
-    return '';
+  const headerAttributes = $derived({
+    ...attributes,
+    ...restProps
   });
+
+  const headerVariantClass = $derived(
+    transactional ? 'public-good-header--transactional' :
+    organisational ? 'public-good-header--organisational' :
+    ''
+  );
 </script>
 
-<header 
+<header
   class="public-good-header bg-primary text-primary-content {headerVariantClass} {classes}"
-  role="banner"
-  {...headerAttributes()}
+  {...headerAttributes}
 >
   <div class="public-good-header__container container mx-auto px-4">
     <div class="public-good-header__content flex items-center justify-between py-4">
-      
+
       <!-- Logo Section -->
       <div class="public-good-header__logo flex items-center">
-        <a 
+        <a
           class="public-good-header__logo-link text-primary-content hover:text-primary-content/80 text-xl font-bold no-underline"
           href={logoUrl}
           aria-label="{logoText} homepage"
         >
           <div class="flex items-center gap-3">
-            <!-- Simple logo placeholder - can be replaced with actual logo/SVG -->
             <div class="w-8 h-8 bg-primary-content rounded-sm flex items-center justify-center">
               <span class="text-primary font-bold text-sm">PG</span>
             </div>
@@ -66,7 +65,7 @@
       <!-- Service Name Section -->
       {#if serviceName}
         <div class="public-good-header__service-name flex-1 mx-6">
-          <a 
+          <a
             class="public-good-header__service-name-link text-primary-content hover:text-primary-content/80 text-lg font-semibold no-underline"
             href={serviceUrl}
           >
@@ -78,14 +77,14 @@
       <!-- Search Section -->
       {#if showSearch && !transactional}
         <div class="public-good-header__search hidden md:block">
-          <form 
+          <form
             class="public-good-header__search-form flex items-center gap-2"
-            role="search" 
+            role="search"
             action={searchAction}
             method="get"
           >
             <label class="sr-only" for="public-good-search-field">Search</label>
-            <input 
+            <input
               class="input input-sm w-48 bg-base-100 text-base-content"
               id="public-good-search-field"
               name="q"
@@ -93,7 +92,7 @@
               placeholder={searchPlaceholder}
               autocomplete="off"
             />
-            <button 
+            <button
               class="btn btn-sm btn-secondary"
               type="submit"
               aria-label="Search"
@@ -109,7 +108,7 @@
       <!-- Mobile Menu Toggle -->
       {#if showNavigation && navigationItems.length > 0}
         <div class="public-good-header__mobile-toggle md:hidden">
-          <button 
+          <button
             class="btn btn-ghost btn-sm text-primary-content"
             onclick={toggleMobileMenu}
             aria-expanded={mobileMenuOpen}
@@ -130,15 +129,14 @@
     <div class="public-good-navigation-container bg-primary-focus">
       <div class="container mx-auto px-4">
         <!-- Desktop Navigation -->
-        <nav 
+        <nav
           class="public-good-navigation hidden md:block"
-          role="navigation"
           aria-label="Primary navigation"
         >
           <ul class="public-good-header__navigation-list flex items-center">
             {#each navigationItems as item}
               <li class="public-good-header__navigation-item">
-                <a 
+                <a
                   class="public-good-header__navigation-link block px-4 py-3 text-primary-content hover:text-primary-content/80 hover:bg-primary/20 no-underline transition-colors"
                   href={item.href}
                   {...(item.attributes || {})}
@@ -155,16 +153,15 @@
         </nav>
 
         <!-- Mobile Navigation -->
-        <nav 
+        <nav
           class="public-good-navigation md:hidden {mobileMenuOpen ? 'block' : 'hidden'}"
           id="public-good-mobile-navigation"
-          role="navigation"
-          aria-label="Primary navigation"
+          aria-label="Primary navigation (mobile)"
         >
           <ul class="public-good-header__navigation-list">
             {#each navigationItems as item}
               <li class="public-good-header__navigation-item border-b border-primary/20 last:border-b-0">
-                <a 
+                <a
                   class="public-good-header__navigation-link block px-4 py-4 text-primary-content hover:text-primary-content/80 hover:bg-primary/20 no-underline transition-colors"
                   href={item.href}
                   {...(item.attributes || {})}
@@ -183,7 +180,6 @@
     </div>
   {/if}
 
-  <!-- Custom Content -->
   {#if children}
     <div class="public-good-header__custom-content">
       {@render children()}

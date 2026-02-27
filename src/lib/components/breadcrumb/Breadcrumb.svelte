@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { BreadcrumbProps } from '$lib/types.js';
-  
+
   interface Props extends BreadcrumbProps {}
-  
+
   let {
     items = [],
     labelText = 'Breadcrumb',
@@ -12,28 +12,26 @@
     ...restProps
   }: Props = $props();
 
-  // Get the last item for mobile back link
-  const lastItem = $derived(() => items[items.length - 1]);
+  const lastItem = $derived(items[items.length - 1]);
 
-  // Create attributes object for spreading
-  const navAttributes = $derived(() => ({
+  const navAttributes = $derived({
     ...attributes,
     ...restProps
-  }));
+  });
 </script>
 
-<nav 
+<nav
   class="public-good-breadcrumb breadcrumbs text-sm {classes}"
   aria-label={labelText}
-  {...navAttributes()}
+  {...navAttributes}
 >
   <!-- Full breadcrumb for desktop -->
   <ol class="public-good-breadcrumb__list {collapseOnMobile ? 'hidden sm:flex' : ''}">
-    {#each items as item, index}
+    {#each items as item}
       <li class="public-good-breadcrumb__item">
         {#if item.href}
-          <a 
-            class="public-good-breadcrumb__link link link-hover" 
+          <a
+            class="public-good-breadcrumb__link link link-hover"
             href={item.href}
             {...item.attributes || {}}
           >
@@ -49,15 +47,15 @@
   <!-- Mobile back link (only shown when collapseOnMobile is true) -->
   {#if collapseOnMobile && lastItem}
     <div class="public-good-breadcrumb__back sm:hidden">
-      <a 
+      <a
         class="public-good-breadcrumb__backlink btn btn-ghost btn-sm flex items-center gap-2"
         href={lastItem.href || '#'}
         {...lastItem.attributes || {}}
       >
-        <svg 
-          class="w-4 h-4" 
-          xmlns="http://www.w3.org/2000/svg" 
-          viewBox="0 0 24 24" 
+        <svg
+          class="w-4 h-4"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
           fill="currentColor"
           aria-hidden="true"
         >

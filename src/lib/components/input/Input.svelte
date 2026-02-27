@@ -2,7 +2,7 @@
   import type { BaseComponentProps } from '$lib/types.js';
   import ErrorMessage from '../error-message/ErrorMessage.svelte';
   import Hint from '../hint/Hint.svelte';
-  
+
   interface InputLabel {
     text?: string;
     html?: string;
@@ -10,25 +10,25 @@
     isPageHeading?: boolean;
     attributes?: Record<string, string>;
   }
-  
+
   interface InputHint {
     text?: string;
     html?: string;
     classes?: string;
     attributes?: Record<string, string>;
   }
-  
+
   interface InputErrorMessage {
     text?: string;
     html?: string;
     classes?: string;
   }
-  
+
   interface InputFormGroup {
     classes?: string;
     attributes?: Record<string, string>;
   }
-  
+
   interface InputProps extends BaseComponentProps {
     id?: string;
     name: string;
@@ -50,9 +50,9 @@
     required?: boolean;
     placeholder?: string;
   }
-  
+
   interface Props extends InputProps {}
-  
+
   let {
     id,
     name,
@@ -79,49 +79,45 @@
     ...restProps
   }: Props = $props();
 
-  // Generate IDs
   const inputId = $derived(id || name);
   const hintId = $derived(hint ? `${inputId}-hint` : undefined);
   const errorId = $derived(errorMessage ? `${inputId}-error` : undefined);
-  
-  // Build aria-describedby
-  const ariaDescribedBy = $derived(() => {
+
+  const ariaDescribedBy = $derived((() => {
     const parts = [];
     if (describedBy) parts.push(describedBy);
     if (hintId) parts.push(hintId);
     if (errorId) parts.push(errorId);
     return parts.length > 0 ? parts.join(' ') : undefined;
-  });
+  })());
 
-  // Create attributes object for form group
-  const formGroupAttributes = $derived(() => ({
-    ...formGroup?.attributes
-  }));
+  const formGroupAttributes = $derived(formGroup?.attributes || {});
 
-  // Create attributes object for input
-  const inputAttributes = $derived(() => ({
+  const inputAttributes = $derived({
     ...attributes,
     ...restProps,
-    'aria-describedby': ariaDescribedBy(),
-    ...(spellcheck !== undefined && { spellcheck }),
-    ...(autocomplete && { autocomplete }),
-    ...(pattern && { pattern }),
-    ...(inputmode && { inputmode })
-  }));
+    'aria-describedby': ariaDescribedBy,
+    ...(spellcheck !== undefined ? { spellcheck } : {}),
+    ...(autocomplete ? { autocomplete } : {}),
+    ...(pattern ? { pattern } : {}),
+    ...(inputmode ? { inputmode } : {})
+  });
 </script>
 
-<div 
+<div
   class="public-good-form-group form-control {errorMessage ? 'public-good-form-group--error' : ''} {formGroup?.classes || ''}"
-  {...formGroupAttributes()}
+  {...formGroupAttributes}
 >
   <!-- Label -->
   {#if label.isPageHeading}
     <h1 class="label-text text-3xl font-bold {label.classes || ''}" {...(label.attributes || {})}>
-      {#if label.html}
-        {@html label.html}
-      {:else}
-        {label.text}
-      {/if}
+      <label for={inputId}>
+        {#if label.html}
+          {@html label.html}
+        {:else}
+          {label.text}
+        {/if}
+      </label>
     </h1>
   {:else}
     <label class="label {label.classes || ''}" for={inputId} {...(label.attributes || {})}>
@@ -137,7 +133,7 @@
 
   <!-- Hint -->
   {#if hint}
-    <Hint 
+    <Hint
       id={hintId}
       text={hint.text}
       html={hint.html}
@@ -148,7 +144,7 @@
 
   <!-- Error Message -->
   {#if errorMessage}
-    <ErrorMessage 
+    <ErrorMessage
       id={errorId}
       text={errorMessage.text}
       html={errorMessage.html}
@@ -164,8 +160,8 @@
           {prefix}
         </div>
       {/if}
-      
-      <input 
+
+      <input
         class="input input-bordered public-good-input {classes} {errorMessage ? 'input-error' : ''} {prefix ? 'rounded-l-none' : ''} {suffix ? 'rounded-r-none' : ''}"
         id={inputId}
         {name}
@@ -175,9 +171,9 @@
         {readonly}
         {required}
         {placeholder}
-        {...inputAttributes()}
+        {...inputAttributes}
       />
-      
+
       {#if suffix}
         <div class="public-good-input__suffix px-3 py-2 bg-base-200 border border-l-0 border-base-300 rounded-r-lg text-sm" aria-hidden="true">
           {suffix}
@@ -185,7 +181,7 @@
       {/if}
     </div>
   {:else}
-    <input 
+    <input
       class="input input-bordered public-good-input {classes} {errorMessage ? 'input-error' : ''}"
       id={inputId}
       {name}
@@ -195,7 +191,7 @@
       {readonly}
       {required}
       {placeholder}
-      {...inputAttributes()}
+      {...inputAttributes}
     />
   {/if}
 

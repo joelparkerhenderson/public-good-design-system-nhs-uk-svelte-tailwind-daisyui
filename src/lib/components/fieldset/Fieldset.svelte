@@ -1,20 +1,20 @@
 <script lang="ts">
   import type { BaseComponentProps } from '$lib/types.js';
-  
+
   interface FieldsetLegend {
     text?: string;
     html?: string;
     classes?: string;
     isPageHeading?: boolean;
   }
-  
+
   interface FieldsetProps extends BaseComponentProps {
     legend?: FieldsetLegend;
     describedBy?: string;
   }
-  
+
   interface Props extends FieldsetProps {}
-  
+
   let {
     legend,
     describedBy,
@@ -24,17 +24,16 @@
     ...restProps
   }: Props = $props();
 
-  // Create attributes object for spreading
-  const fieldsetAttributes = $derived(() => ({
+  const fieldsetAttributes = $derived({
     ...attributes,
     ...restProps,
-    ...(describedBy && { 'aria-describedby': describedBy })
-  }));
+    ...(describedBy ? { 'aria-describedby': describedBy } : {})
+  });
 </script>
 
-<fieldset 
+<fieldset
   class="public-good-fieldset {classes}"
-  {...fieldsetAttributes()}
+  {...fieldsetAttributes}
 >
   {#if legend?.html || legend?.text}
     <legend class="public-good-fieldset__legend text-lg font-semibold mb-4 {legend.classes || ''}">
@@ -55,7 +54,7 @@
       {/if}
     </legend>
   {/if}
-  
+
   {#if children}
     {@render children()}
   {/if}
